@@ -5,6 +5,7 @@ DROP TABLE group_balance CASCADE;
 DROP TABLE group_participant CASCADE;
 DROP TABLE profile CASCADE;
 DROP TABLE user_group CASCADE;
+DROP TABLE currency CASCADE;
 
 CREATE TABLE debt_settlement (
   id uuid PRIMARY KEY default gen_random_uuid(),
@@ -46,7 +47,7 @@ CREATE TABLE group_participant (
   id uuid PRIMARY KEY default gen_random_uuid(),
   user_id uuid NOT NULL,
   group_id uuid NOT NULL,
-  joined_at timestamptz NOT NULL,
+  is_active bool NOT NULL default TRUE,
   created_at timestamptz NOT NULL default now(),
   updated_at timestamptz NOT NULL default now()
 );
@@ -62,6 +63,10 @@ CREATE TABLE user_group (
   created_at timestamptz NOT NULL default now(),
   updated_at timestamptz NOT NULL default now()
 );
+CREATE TABLE currency (
+  code text PRIMARY KEY
+);
+
 
 -- Relations
 ALTER TABLE debt_settlement ADD FOREIGN KEY (paying_user_id) REFERENCES profile (id);
@@ -69,6 +74,7 @@ ALTER TABLE debt_settlement ADD FOREIGN KEY (beneficiary_user_id) REFERENCES pro
 
 ALTER TABLE expense ADD FOREIGN KEY (group_id) REFERENCES user_group (id);
 ALTER TABLE expense ADD FOREIGN KEY (paying_user_id) REFERENCES profile (id);
+ALTER TABLE expense ADD FOREIGN KEY (currency) REFERENCES currency (code);
 
 ALTER TABLE expense_participant ADD FOREIGN KEY (expense_id) REFERENCES expense (id);
 ALTER TABLE expense_participant ADD FOREIGN KEY (user_id) REFERENCES profile (id);
