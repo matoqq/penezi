@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
-debug_db_password = "jaj ;)"
+import os
 
 db = SQLAlchemy()
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = f"postgresql://postgres:{debug_db_password}@db.wgohgcfqldxwfpokwxui.supabase.co:5432/postgres"
+db_connection_string = f"postgresql://postgres:{os.environ['DATABASE_PASSWORD']}@db.wgohgcfqldxwfpokwxui.supabase.co:5432/postgres"
+app.config["SQLALCHEMY_DATABASE_URI"] = db_connection_string
 
 db.init_app(app)
 
@@ -15,4 +15,6 @@ class SupaUser(db.Model):
     email = db.Column(db.String)
 
 with app.app_context():
+    print("db password:")
+    print(db_connection_string)
     db.create_all()
